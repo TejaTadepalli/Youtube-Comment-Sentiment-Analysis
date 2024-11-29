@@ -1,7 +1,5 @@
 body{
     background-color: #E3E2DF;
-    /*background-image: 'images/image1.jpg';*/
-    /*background-repeat:no-repeat;*/
     text-align: center;
     background-size: 100%;
 }
@@ -117,8 +115,3 @@ tr:hover{
     transform: rotateY(360deg)
   }
 }
-
-/* img{
-    size: 100px 100px;
-} */
-

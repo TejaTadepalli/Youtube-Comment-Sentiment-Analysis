@@ -1,72 +1,73 @@
-## Imports
-
 import pandas as pd
 import csv
 import nltk
-import os.path as checkcsv
-
-## Downloads
+import os
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 def sepposnegcom(comment_file):
+    print(f"Processing sentiment analysis for file: {comment_file}")  # Debugging
 
-    ## Reading Dataset
+    # Check if file exists
+    if not os.path.exists(comment_file):
+        raise FileNotFoundError(f"File {comment_file} does not exist. Please provide a valid file.")
+    
+    # Reading Dataset
+    dataset = pd.read_csv(comment_file, encoding_errors='ignore')
+    print("Dataset loaded successfully.")
+    print("Columns available in dataset:", dataset.columns.tolist())  # Debugging
+    print("First few rows of the dataset:\n", dataset.head())  # Debugging
 
-    dataset = pd.read_csv(comment_file, encoding_errors = 'ignore')
-    dataset = dataset.iloc[:, 0:]
+    # Check if 'Comment' column exists
+    if 'Comment' not in dataset.columns:
+        raise ValueError("The input dataset does not have a 'Comment' column.")
 
-    ## Getting Full Comments to csv file
-
-    #full_com = dataset
-    #full_comments = full_com.to_csv("Full Comments.csv")
-
-    ## Sentiment analysis of comments using vadar sentiment analyser
-
-    from nltk.sentiment.vader import SentimentIntensityAnalyzer
+    # Sentiment analysis of comments using VADER SentimentIntensityAnalyzer
     analyser = SentimentIntensityAnalyzer()
 
     def vader_sentiment_result(sent):
         scores = analyser.polarity_scores(sent)
+        return 0 if scores["neg"] > scores["pos"] else 1
 
-        if scores["neg"] > scores["pos"]:
-            return 0
-        return 1
+    dataset['vader_sentiment'] = dataset['Comment'].apply(lambda x: vader_sentiment_result(x))
+    print("Sentiment analysis completed. First few rows:\n", dataset.head())  # Debugging
 
-    dataset['vader_sentiment'] = dataset['Comment'].apply(lambda x : vader_sentiment_result(x))
+    # Separating Positive and Negative Comments
+    positive_comments = dataset[dataset['vader_sentiment'] == 1]
+    negative_comments = dataset[dataset['vader_sentiment'] == 0]
 
-    ## Separating Positive and Negative Comments
+    # Save to CSV files
+    positive_file = '(1,).csv'
+    negative_file = '(0,).csv'
 
-    for (sentiment), group in dataset.groupby(['vader_sentiment']):
-        group.to_csv(f'{sentiment}.csv', index=False)
-    
-    if checkcsv.exists('1.csv') == False:                             # If 1.csv file does not exist, it creates one empty 1.csv file.
-        with open('1.csv', 'w', encoding='UTF8', newline='') as f1:
-            writer1 = csv.writer(f1)
-            header1 = ['Empty', 'Empty', 'Empty']
-            row1 = ['No Positive Comments', 'No Positive Comments', 'No Positive Comments']
-            writer1.writerow(header1)
-            writer1.writerow(row1)
+    if not positive_comments.empty:
+        positive_comments.to_csv(positive_file, index=False)
+        print(f"Saved positive comments to {positive_file}.")  # Debugging
+    else:
+        # Create empty positive file if no comments found
+        with open(positive_file, 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Empty'])
+            writer.writerow(['No Positive Comments'])
+        print(f"No positive comments found. Created empty {positive_file}.")  # Debugging
 
-    if checkcsv.exists('0.csv') == False:                             # If 1.csv file does not exist, it creates one empty 1.csv file.
-        with open('0.csv', 'w',encoding='UTF8', newline='') as f0:
-            writer0 = csv.writer(f0)
-            header0 = ['Empty', 'Empty', 'Empty']
-            row0 = ['No Negative Comments', 'No Negative Comments', 'No Negative Comments']
-            writer0.writerow(header0)
-            writer0.writerow(row0)
-    
-    pos = (pd.read_csv("1.csv", engine = 'python')).iloc[:, :-1]
-    neg = (pd.read_csv("0.csv", engine = 'python')).iloc[:, :-1]
+    if not negative_comments.empty:
+        negative_comments.to_csv(negative_file, index=False)
+        print(f"Saved negative comments to {negative_file}.")  # Debugging
+    else:
+        # Create empty negative file if no comments found
+        with open(negative_file, 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Empty'])
+            writer.writerow(['No Negative Comments'])
+        print(f"No negative comments found. Created empty {negative_file}.")  # Debugging
 
-    positive_comments = pos.to_csv("Positive Comments.csv", index=False)
-    negative_comments = neg.to_csv("Negative Comments.csv",index=False)
+    # Count total rows in positive and negative comments
+    video_positive_comments = f"{len(positive_comments)} Comments" if not positive_comments.empty else '0 Comments'
+    video_negative_comments = f"{len(negative_comments)} Comments" if not negative_comments.empty else '0 Comments'
 
-    video_positive_comments = str(len(pos.axes[0])) + ' Comments'  #Finding total rows in positive comments
-    video_negative_comments = str(len(neg.axes[0])) + ' Comments'  #Finding total rows in negative comments
-    
-    if (pd.read_csv('1.csv', nrows=0).columns.tolist())[0] == 'Empty':
-        video_positive_comments = '0 Comments'
-    if (pd.read_csv('0.csv', nrows=0).columns.tolist())[0] == 'Empty':
-        video_negative_comments = '0 Comments'
+    # Debugging final counts
+    print(f"Total Positive Comments: {video_positive_comments}")
+    print(f"Total Negative Comments: {video_negative_comments}")
 
-    ## return function
-    return positive_comments, negative_comments, video_positive_comments, video_negative_comments
+    # Return final results
+    return positive_file, negative_file, video_positive_comments, video_negative_comments

@@ -24,18 +24,13 @@ def scrapfyt(url):
   ## Opening chrome and url
 
   option = webdriver.ChromeOptions()
-  #option.binary_location = os.environ.get("GOOGLE_CHROME_BIN")  # For cloud
   option.add_argument('--headless')
   option.add_argument('-no-sandbox')
-#   option.add_argument("--disable-infobars")
-#   option.add_argument("--disable-gpu")
   option.add_argument("--mute-audio")
   option.add_argument("--disable-extensions")
   option.add_argument('-disable-dev-shm-usage')
 
-  driver = webdriver.Chrome(service=Service("C:/chrome extension/chromedriver.exe"), options=option) # For testing in windows
-
-  #driver = webdriver.Chrome(service = Service(executable_path = os.environ.get("CHROMEDRIVER_PATH")), options = option)  # For cloud
+  driver = webdriver.Chrome(service=Service("chromedriver-win64/chromedriver.exe"), options=option) # For testing in windows
 
   driver.set_window_size(960, 800)      # minimizing window to optimum because of youtube design of
                                         # right side videos recommendations. When in max window,
@@ -106,18 +101,13 @@ def scrapfyt(url):
 
   all_comments = commentsfile.replace(np.nan, '-', regex = True)
   all_comments = all_comments.to_csv("Full Comments.csv", index = False)
-  # comments.to_html("Comments2.html")
 
   ##total comments without replies
   video_comment_without_replies = str(len(commentsfile.axes[0])) + ' Comments'
 
-  # print(video_title, video_owner, video_comment_with_replies, video_comment_without_replies)
-
   ## Close driver
 
   driver.close()
-
-  # print("Scraping is finished")
 
   ## return fuction
 
