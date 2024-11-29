@@ -1,10 +1,7 @@
 # YouTube Sentiment Analysis Web Application
 
 <div style="background-color: white; padding: 10px; display: inline-block;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Flask_logo.svg/512px-Flask_logo.svg.png" width="100" alt="Flask">
-</div> &nbsp;
-<div style="background-color: white; padding: 10px; display: inline-block;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Pandas_logo.svg/512px-Pandas_logo.svg.png" width="100" alt="Pandas">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Flask_logo.svg/512px-Flask_logo.svg.png" width="100" alt="Flask"> &nbsp; <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Pandas_logo.svg/512px-Pandas_logo.svg.png" width="100" alt="Pandas">
 </div>
 
 This project allows users to analyze YouTube video comments for sentiment analysis (positive and negative sentiments) through a Flask-based web application.
