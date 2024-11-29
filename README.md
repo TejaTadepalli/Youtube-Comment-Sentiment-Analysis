@@ -69,4 +69,5 @@ The application is hosted locally and can be accessed via Flask's development se
 ## Notes:
 - Browser Compatibility:
 This application uses ChromeDriver for web scraping, which works with the Chrome browser. For other browsers, you will need to download their respective drivers (e.g., GeckoDriver for Firefox, EdgeDriver for Microsoft Edge) and configure the application accordingly.
+
 ---
